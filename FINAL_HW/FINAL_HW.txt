@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-img = cv2.imread(r"C:\Users\ASUS\Downloads\9.jpg") #輸入資料
+img = cv2.imread(r"C:\Users\ASUS\Downloads\MONEY.jpg") #輸入資料
 h, w, ch = img.shape  #圖片高、寬、通道
 
 img = cv2.resize(img, (w//5, h//5), interpolation=cv2.INTER_NEAREST) #important
