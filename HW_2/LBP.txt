@@ -1,0 +1,38 @@
+'''
+python 学习 OpenCV
+'''
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+def img_transform():
+    img1 = cv2.imread(r"C:\Users\ASUS\Desktop\mountain.jpg")
+    img2 = cv2.imread(r"C:\Users\ASUS\Desktop\mountain_1.jpg")
+    hist1B = cv2.calcHist([img1], [0], None, [256], [0, 255])
+    hist2B = cv2.calcHist([img2], [0], None, [256], [0, 255])
+    hist1G = cv2.calcHist([img1], [1], None, [256], [0, 255])
+    hist2G = cv2.calcHist([img2], [1], None, [256], [0, 255])
+    hist1R = cv2.calcHist([img1], [2], None, [256], [0, 255])
+    hist2R = cv2.calcHist([img2], [2], None, [256], [0, 255])
+
+    retvalB = cv2.compareHist(hist1B, hist2B, cv2.HISTCMP_CORREL)  # 相关性，越接近1越相关
+    retvalG = cv2.compareHist(hist1G, hist2G, cv2.HISTCMP_CORREL)
+    retvalR = cv2.compareHist(hist1R, hist2R, cv2.HISTCMP_CORREL)
+    print('retvalB', retvalB)
+    print('retvalG', retvalG)
+    print('retvalR', retvalR)
+
+    plt.figure(figsize=(14, 8))
+    plt.subplot(131)
+    plt.plot(hist1B, 'b')
+    plt.plot(hist2B, 'b--')
+    plt.subplot(132)
+    plt.plot(hist1G, 'g')
+    plt.plot(hist2G, 'g--')
+    plt.subplot(133)
+    plt.plot(hist1R, 'r')
+    plt.plot(hist2R, 'r--')
+    plt.show()
+
+if __name__ == '__main__':
+    img_transform()
