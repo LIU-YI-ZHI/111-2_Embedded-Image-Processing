@@ -1,0 +1,59 @@
+import cv2
+import numpy as np
+
+img = cv2.imread(r"C:\Users\ASUS\Downloads\9.jpg") #輸入資料
+h, w, ch = img.shape  #圖片高、寬、通道
+
+img = cv2.resize(img, (w//5, h//5), interpolation=cv2.INTER_NEAREST) #important
+#縮小圖片，記住這邊的 interpolation 選擇很重要，如果不確定建議可以都試試找最棒的
+
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  #灰階化，方便閱讀
+ret, gray = cv2.threshold(gray, 60, 255, cv2.THRESH_BINARY) #二值化，45 是慢慢設定的
+
+
+gray = cv2.erode(gray, np.ones((3,3)), iterations=3) #侵蝕，裡面矩陣與 iterations 細調
+gray = cv2.dilate(gray, np.ones((3,3)), iterations=2) #膨脹，裡面矩陣與 iterations 細調
+
+#連通物件，設八通道這樣才嚴謹
+num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(gray, connectivity=8)
+print(stats) #檢查所有區塊
+
+ans = 0 #輸出多少錢
+
+for it in stats:
+  itX = it[0]+it[2] #寬度
+  itY = it[1]+it[3] #高度
+  itArea = it[2]*it[3] #面積，忽略掉區塊內雜訊
+  print(itArea)  #可以第一次執行時先印出面積，比較容易在下面 if 的參數做微調
+#  cv2.rectangle(img, (it[0], it[1]), (itX, itY), (200, 31, 31), 2)
+#一開始可以使用，這樣她會畫出所有的區塊來讓你判斷有沒有區塊沒畫到或連在一起
+
+  if(itArea >= 1000 and itArea < 1200): #1 dollars
+    cv2.rectangle(img, (it[0], it[1]), (itX, itY), (0, 0, 255), 2) #BGR
+    ans += 1
+  if(itArea >= 1250 and itArea < 1500): #5 dollars
+    cv2.rectangle(img, (it[0], it[1]), (itX, itY), (0, 165, 255), 2) #BGR
+    ans += 5
+  if(itArea >= 1550 and itArea < 2200): #10 dallars
+    cv2.rectangle(img, (it[0], it[1]), (itX, itY), (0, 255, 255), 2) #BGR
+    ans += 10
+  if(itArea >= 2200 and itArea < 3000): #50 dollars
+    cv2.rectangle(img, (it[0], it[1]), (itX, itY), (0, 128, 0), 2) #BGR
+    ans += 50
+  if(itArea >= 20000 and itArea < 37000): #100 dollars
+    cv2.rectangle(img, (it[0], it[1]), (itX, itY), (200, 31, 31), 2)
+    ans += 100
+  if(itArea >= 38000 and itArea < 40500): #500 dollars
+    cv2.rectangle(img, (it[0], it[1]), (itX, itY), (128, 0, 128), 2)
+    ans += 1000
+  if(itArea >= 40000 and itArea < 45000): #1000 dollars
+    cv2.rectangle(img, (it[0], it[1]), (itX, itY), (255, 255, 255), 2)
+    ans += 500
+
+print("圖上共有 ",ans ,"元")
+cv2.imshow("gray", gray)
+cv2.imshow("img", img)
+
+cv2.imwrite('ans3-3.jpg', img)
+cv2.imwrite('gray3-3.jpg', gray)
+cv2.waitKey(0)
